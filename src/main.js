@@ -3,8 +3,8 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import { Bridge } from './plugins';
+import './plugins/element.js'
 
-//Webchannel的初始化
 var init = _ => {
     new Vue({
         router,

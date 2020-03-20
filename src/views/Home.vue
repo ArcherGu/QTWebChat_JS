@@ -1,60 +1,75 @@
 <template>
-    <div class="home">
-        Receive Msg: <textarea v-model="receiveMsg" />
-        <br>
-        Send Msg: <textarea v-model="sendMsg" />
-        <br>
-        <button @click="send">Send</button>
+    <el-form
+        label-position="top"
+        label-width="80px"
+        :model="msg"
+    >
+        <el-form-item label="Receive Msg">
+            <el-input
+                v-model="msg.receiveMsg"
+                type="textarea"
+                :rows="10"
+            ></el-input>
+        </el-form-item>
+        <el-form-item label="Send Msg">
+            <el-input
+                v-model="msg.sendMsg"
+                type="textarea"
+                autosize
+            ></el-input>
+        </el-form-item>
+        <el-form-item>
+            <el-button
+                @click="send"
+                type="primary"
+            >
+                Send
+            </el-button>
+        </el-form-item>
+    </el-form>
     </div>
 </template>
 
 <script>
-import { JsClient } from '../main';
+import { JsClient } from "@/main";
 export default {
-    name: 'Home',
-    components: {
-
-    },
+    name: "Home",
+    components: {},
     data() {
         return {
-            action: 'JSSendMessage',
-            sendMsg: '',
-            receiveMsg: '',
-        }
+            action: "JSSendMessage",
+            msg: {
+                sendMsg: "",
+                receiveMsg: "",
+            }
+        };
     },
     mounted() {
-        JsClient.Listener('SigSendMessageToJS', this.receive);
+        JsClient.Listener("SigSendMessageToJS", this.receive);
     },
     methods: {
-        printChannel() {
-            console.log(JsClient);
-        },
-
         send() {
-            JsClient.Sender({
-                action: this.action,
-                data: this.sendMsg
-            }).then((response) => {
+            JsClient.Sender({ action: this.action, data: this.msg.sendMsg }).then(response => {
                 let time = this.dateToString(new Date());
-                this.receiveMsg += `[${time}] JS: ${this.sendMsg}\n`;
-                this.sendMsg = ''
-            }).catch((error) => {
+                this.msg.receiveMsg += `[${time}] JS: ${this.msg.sendMsg}\n`;
+                this.msg.sendMsg = "";
+            }).catch(error => {
                 console.error(error);
             });
         },
 
         receive(msg) {
             let time = this.dateToString(new Date());
-            this.receiveMsg += `[${time}] QT: ${msg}\n`;
+            this.msg.receiveMsg += `[${time}] QT: ${msg}\n`;
         },
 
         dateToString(now) {
             var year = now.getFullYear();
             var month = (now.getMonth() + 1).toString();
-            var day = (now.getDate()).toString();
-            var hour = (now.getHours()).toString();
-            var minute = (now.getMinutes()).toString();
-            var second = (now.getSeconds()).toString();
+            var day = now.getDate().toString();
+            var hour = now.getHours().toString();
+            var minute = now.getMinutes().toString();
+            var second = now.getSeconds().toString();
             if (month.length == 1) {
                 month = "0" + month;
             }
@@ -70,10 +85,20 @@ export default {
             if (second.length == 1) {
                 second = "0" + second;
             }
-            var dateTime = year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second;
+            var dateTime =
+                year +
+                "-" +
+                month +
+                "-" +
+                day +
+                " " +
+                hour +
+                ":" +
+                minute +
+                ":" +
+                second;
             return dateTime;
         }
-
     }
-}
+};
 </script>
