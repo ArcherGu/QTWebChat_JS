@@ -8,6 +8,7 @@
             <el-input
                 v-model="msg.receiveMsg"
                 type="textarea"
+                readonly
                 :rows="10"
             ></el-input>
         </el-form-item>
