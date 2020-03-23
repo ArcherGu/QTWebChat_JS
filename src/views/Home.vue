@@ -46,6 +46,7 @@ export default {
         };
     },
     created() {
+        this.unNewTest();
         JsClient.On("SigSendMessageToJS", this.receive);
     },
     beforeDestroy() {
@@ -105,6 +106,17 @@ export default {
                 ":" +
                 second;
             return dateTime;
+        },
+
+        unNewTest() {
+            let sendMsg = "这是一条测试QWebChannel部分尚未初始化的信息";
+            JsClient.Send({ action: this.action, data: sendMsg }).then((response) => {
+                let time = this.dateToString(new Date());
+                this.msg.receiveMsg += `[${time}] JS: ${sendMsg}\n`;
+                this.msg.sendMsg = "";
+            }).catch((error) => {
+                console.log(error)
+            });
         }
     }
 };

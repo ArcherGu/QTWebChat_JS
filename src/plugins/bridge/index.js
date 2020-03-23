@@ -37,18 +37,62 @@ var JsClient = function (qtObjName, callback = _ => {}) {
         };
     }
 
-    this.Send = _ => {};
-    this.On = _ => { console.log("尚未初始化！"); };
-    this.Off = _ => { console.log("尚未初始化！"); };
+    //初始化未完成之前先暂存
+    this.sendQueue = [];
+    this.eventQueue = [];
+
+    this.Send = ({ action, data = '' }) => {
+        return new Promise((resolve, reject) => {
+            this.sendQueue.push({
+                action: action,
+                data: data,
+                promise: {
+                    resolve: resolve,
+                    reject: reject,
+                }
+            });
+        });
+    };
+
+    this.On = (event, callback) => { 
+        this.eventQueue.push({
+            event: event,
+            callback: callback
+        });
+    };
+
+    this.Off = (event, callback) => { 
+        console.log("尚未初始化！"); 
+    };
+
     new QWebChannel(window.qt.webChannelTransport, (channel) => {
         if (!Object.keys(channel.objects).includes(qtObjName)) {
             callback();
             return console.error('[QTWEBCHANNEL]: Unknown QT Object !');
         }
+
         const QtServer = channel.objects[qtObjName];
+
         this.Send = createSender(QtServer);
         this.On = addDispatcher(QtServer);
         this.Off = removeDispatcher(QtServer);
+
+        if (this.sendQueue.length > 0) {
+            this.sendQueue.forEach(e => {
+                this.Send({ action: e.action, data: e.data , promise: e.promise });
+            });
+
+            this.sendQueue = [];
+        }
+
+        if (this.eventQueue.length > 0) {
+            this.eventQueue.forEach(e => {
+                this.On(e.event, e.callback);
+            });
+
+            this.eventQueue = [];
+        }
+
         callback();
     });
 }

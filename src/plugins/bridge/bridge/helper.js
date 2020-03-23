@@ -1,6 +1,11 @@
 export function createSender(QtServer) {
-    return ({ action, data = '' }) => {
+    return ({ action, data = '' , promise = null }) => {
         return new Promise((resolve, reject) => {
+            if (promise && promise.reject && promise.resolve) {
+                resolve = promise.resolve;
+                reject = promise.reject;
+            }
+
             if (!Object.keys(QtServer).includes(action)) {
                 return reject(new Error('[SENDER]: Unknown action name !'));
             }
