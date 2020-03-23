@@ -6,7 +6,8 @@ import {
 } from './utils';
 import {
     createSender,
-    createListener
+    addDispatcher,
+    removeDispatcher
 } from './bridge/helper';
 
 const __DEV__ = process.env.NODE_ENV === 'development';
@@ -36,16 +37,18 @@ var JsClient = function (qtObjName, callback = _ => {}) {
         };
     }
 
-    this.Sender = _ => {};
-    this.Listener = _ => { console.log("尚未初始化！"); };
+    this.Send = _ => {};
+    this.On = _ => { console.log("尚未初始化！"); };
+    this.Off = _ => { console.log("尚未初始化！"); };
     new QWebChannel(window.qt.webChannelTransport, (channel) => {
         if (!Object.keys(channel.objects).includes(qtObjName)) {
             callback();
             return console.error('[QTWEBCHANNEL]: Unknown QT Object !');
         }
         const QtServer = channel.objects[qtObjName];
-        this.Sender = createSender(QtServer);
-        this.Listener = createListener(QtServer);
+        this.Send = createSender(QtServer);
+        this.On = addDispatcher(QtServer);
+        this.Off = removeDispatcher(QtServer);
         callback();
     });
 }

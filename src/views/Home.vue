@@ -45,12 +45,18 @@ export default {
             }
         };
     },
+    created() {
+        JsClient.On("SigSendMessageToJS", this.receive);
+    },
+    beforeDestroy() {
+        JsClient.Off("SigSendMessageToJS", this.receive);
+    },
     mounted() {
-        JsClient.Listener("SigSendMessageToJS", this.receive);
+
     },
     methods: {
         send() {
-            JsClient.Sender({ action: this.action, data: this.msg.sendMsg }).then(response => {
+            JsClient.Send({ action: this.action, data: this.msg.sendMsg }).then(response => {
                 let time = this.dateToString(new Date());
                 this.msg.receiveMsg += `[${time}] JS: ${this.msg.sendMsg}\n`;
                 this.msg.sendMsg = "";

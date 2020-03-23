@@ -18,7 +18,7 @@ export function createSender(QtServer) {
     }
 }
 
-export function createListener(QtServer) {
+export function addDispatcher(QtServer) {
     return (event, callback) => {
         if (!Object.keys(QtServer).includes(event)) {
             return reject(new Error('[LISTENER]: Unknown event name!'));
@@ -36,5 +36,26 @@ export function createListener(QtServer) {
             )
         }
         QtServer[event].connect(callback);
+    }
+}
+
+export function removeDispatcher(QtServer) {
+    return (event, callback) => {
+        if (!Object.keys(QtServer).includes(event)) {
+            return reject(new Error('[LISTENER]: Unknown event name!'));
+        }
+
+        if (!Object.keys(QtServer[event]).includes('disconnect')) {
+            return reject(
+                new Error(`[LISTENER]: ${event} is not a Qt signa!`)
+            )
+        }
+
+        if (typeof QtServer[event].disconnect !== 'function') {
+            return reject(
+                new Error(`[LISTENER]: No Disconnect Function!`)
+            )
+        }
+        QtServer[event].disconnect(callback);
     }
 }
