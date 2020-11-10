@@ -42,7 +42,7 @@ export default {
             msg: {
                 sendMsg: "",
                 receiveMsg: "",
-            }
+            },
         };
     },
     created() {
@@ -52,18 +52,19 @@ export default {
     beforeDestroy() {
         JsClient.Off("SigSendMessageToJS", this.receive);
     },
-    mounted() {
-
-    },
+    mounted() {},
     methods: {
         send() {
-            JsClient.Send({ action: this.action, data: this.msg.sendMsg }).then(response => {
-                let time = this.dateToString(new Date());
-                this.msg.receiveMsg += `[${time}] JS: ${this.msg.sendMsg}\n`;
-                this.msg.sendMsg = "";
-            }).catch(error => {
-                console.error(error);
-            });
+            JsClient.Send({ action: this.action, data: this.msg.sendMsg })
+                .then((response) => {
+                    console.log(response);
+                    let time = this.dateToString(new Date());
+                    this.msg.receiveMsg += `[${time}] JS: ${this.msg.sendMsg}\n`;
+                    this.msg.sendMsg = "";
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
         },
 
         receive(msg) {
@@ -110,14 +111,16 @@ export default {
 
         unNewTest() {
             let sendMsg = "这是一条测试QWebChannel部分尚未初始化的信息";
-            JsClient.Send({ action: this.action, data: sendMsg }).then((response) => {
-                let time = this.dateToString(new Date());
-                this.msg.receiveMsg += `[${time}] JS: ${sendMsg}\n`;
-                this.msg.sendMsg = "";
-            }).catch((error) => {
-                console.log(error)
-            });
-        }
-    }
+            JsClient.Send({ action: this.action, data: sendMsg })
+                .then((response) => {
+                    let time = this.dateToString(new Date());
+                    this.msg.receiveMsg += `[${time}] JS: ${sendMsg}\n`;
+                    this.msg.sendMsg = "";
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+    },
 };
 </script>
