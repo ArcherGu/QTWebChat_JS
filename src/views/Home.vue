@@ -32,13 +32,13 @@
 </template>
 
 <script>
-import { JsClient } from "@/main";
+import { sendMsg, msgListener } from "../api";
+
 export default {
     name: "Home",
     components: {},
     data() {
         return {
-            action: "JSSendMessage",
             msg: {
                 sendMsg: "",
                 receiveMsg: "",
@@ -47,15 +47,15 @@ export default {
     },
     created() {
         this.unNewTest();
-        JsClient.On("SigSendMessageToJS", this.receive);
+        msgListener.add(this.receive);
     },
     beforeDestroy() {
-        JsClient.Off("SigSendMessageToJS", this.receive);
+        msgListener.remove(this.receive);
     },
     mounted() {},
     methods: {
         send() {
-            JsClient.Send({ action: this.action, data: this.msg.sendMsg })
+            sendMsg(this.msg.sendMsg)
                 .then((response) => {
                     console.log(response);
                     let time = this.dateToString(new Date());
@@ -110,11 +110,11 @@ export default {
         },
 
         unNewTest() {
-            let sendMsg = "这是一条测试QWebChannel部分尚未初始化的信息";
-            JsClient.Send({ action: this.action, data: sendMsg })
+            let msg = "这是一条测试QWebChannel部分尚未初始化的信息";
+            sendMsg(msg)
                 .then((response) => {
                     let time = this.dateToString(new Date());
-                    this.msg.receiveMsg += `[${time}] JS: ${sendMsg}\n`;
+                    this.msg.receiveMsg += `[${time}] JS: ${msg}\n`;
                     this.msg.sendMsg = "";
                 })
                 .catch((error) => {

@@ -12,7 +12,7 @@ import {
 
 const __DEV__ = process.env.NODE_ENV === 'development';
 
-var JsClient = function (qtObjName, callback = _ => {}) {
+var WebBridge = function (qtObjName, callback = _ => { }) {
     //初始化参数是否正常
     if (!qtObjName) {
         assert(qtObjName, '必须提供一个QT对象的名称！');
@@ -32,7 +32,7 @@ var JsClient = function (qtObjName, callback = _ => {}) {
                 send() {
                     log('QWebChannel simulator activated !');
                 },
-                onmessage() {}
+                onmessage() { }
             }
         };
     }
@@ -41,7 +41,7 @@ var JsClient = function (qtObjName, callback = _ => {}) {
     this.sendQueue = [];
     this.eventQueue = [];
 
-    this.Send = ({ action, data = '' }) => {
+    this.send = ({ action, data = '' }) => {
         return new Promise((resolve, reject) => {
             this.sendQueue.push({
                 action: action,
@@ -54,15 +54,15 @@ var JsClient = function (qtObjName, callback = _ => {}) {
         });
     };
 
-    this.On = (event, callback) => { 
+    this.on = (event, callback) => {
         this.eventQueue.push({
             event: event,
             callback: callback
         });
     };
 
-    this.Off = (event, callback) => { 
-        console.log("尚未初始化！"); 
+    this.off = (event, callback) => {
+        console.log("尚未初始化！");
     };
 
     new QWebChannel(window.qt.webChannelTransport, (channel) => {
@@ -73,13 +73,13 @@ var JsClient = function (qtObjName, callback = _ => {}) {
 
         const QtServer = channel.objects[qtObjName];
 
-        this.Send = createSender(QtServer);
-        this.On = addDispatcher(QtServer);
-        this.Off = removeDispatcher(QtServer);
+        this.send = createSender(QtServer);
+        this.on = addDispatcher(QtServer);
+        this.off = removeDispatcher(QtServer);
 
         if (this.sendQueue.length > 0) {
             this.sendQueue.forEach(e => {
-                this.Send({ action: e.action, data: e.data , promise: e.promise });
+                this.send({ action: e.action, data: e.data, promise: e.promise });
             });
 
             this.sendQueue = [];
@@ -87,7 +87,7 @@ var JsClient = function (qtObjName, callback = _ => {}) {
 
         if (this.eventQueue.length > 0) {
             this.eventQueue.forEach(e => {
-                this.On(e.event, e.callback);
+                this.on(e.event, e.callback);
             });
 
             this.eventQueue = [];
@@ -95,6 +95,6 @@ var JsClient = function (qtObjName, callback = _ => {}) {
 
         callback();
     });
-}
+};
 
-export default JsClient;
+export default WebBridge;
