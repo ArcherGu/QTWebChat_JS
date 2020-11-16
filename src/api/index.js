@@ -13,7 +13,7 @@ function _addMsgListener(callback) {
 }
 
 function _removeMsgListener(callback) {
-    webBridge.on("SigReceviceMessageFromQT", callback);
+    webBridge.off("SigReceviceMessageFromQT", callback);
 }
 
 export const msgListener = {
