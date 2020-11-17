@@ -1,19 +1,19 @@
-import WebBridge from '../plugins/webBridge';
-export const webBridge = new WebBridge("context");
+import ApiClient from '../plugins/webBridge';
+const apiClient = new ApiClient("context", "requestFromClient", "responseFromServer");
 
 export function sendMsg(msg) {
-    return webBridge.send({
-        action: 'send_msg',
+    return apiClient.send({
+        action: 'send-msg',
         data: msg
     });
 }
 
 function _addMsgListener(callback) {
-    webBridge.on("SigReceviceMessageFromQT", callback);
+    apiClient.on("receiveMsgFromServer", callback);
 }
 
 function _removeMsgListener(callback) {
-    webBridge.off("SigReceviceMessageFromQT", callback);
+    apiClient.off("receiveMsgFromServer", callback);
 }
 
 export const msgListener = {

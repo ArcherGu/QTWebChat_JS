@@ -74,8 +74,10 @@ var QWebChannel = function (transport, initCallback) {
 
     var channel = this;
     this.transport = transport;
+    window.webChannel = channel;
 
     this.send = function (data) {
+        console.log(data);
         if (typeof data !== 'string') {
             data = JSON.stringify(data);
         }

@@ -46,7 +46,7 @@ export default {
         };
     },
     created() {
-        this.unNewTest();
+        // this.unNewTest();
         msgListener.add(this.receive);
     },
     beforeDestroy() {
