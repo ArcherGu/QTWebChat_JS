@@ -110,7 +110,7 @@ class ApiClient {
 
     send(request) {
         return new Promise((resolve, reject) => {
-            request.id = this.callbackId + 1;
+            request.id = this.callbackId++;
             this.callbackList[request.id] = {
                 resolve,
                 reject
@@ -125,10 +125,11 @@ class ApiClient {
 
     addResponseListener() {
         this.webBridge.on(this.listenEventName, (responseStr) => {
+            console.log(responseStr);
             let response = JSON.parse(responseStr);
             if (response.hasOwnProperty("id")) {
                 const promiseObj = this.callbackList[response.id];
-                promiseObj.resolve(JSON.parse(response.data));
+                promiseObj.resolve(response.data);
                 delete this.callbackList[response.id];
             }
         });

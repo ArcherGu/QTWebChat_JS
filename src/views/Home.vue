@@ -20,19 +20,33 @@
             ></el-input>
         </el-form-item>
         <el-form-item>
-            <el-button
-                @click="send"
-                type="primary"
-            >
-                Send
-            </el-button>
+            <el-row>
+                <el-col :span="12">
+                    <el-button
+                        @click="send"
+                        type="primary"
+                    >
+                        Send
+                    </el-button>
+                </el-col>
+
+                <el-col :span="12">
+                    <el-button
+                        @click="sendSync"
+                        type="primary"
+                    >
+                        Send-Sync
+                    </el-button>
+                </el-col>
+            </el-row>
+
         </el-form-item>
     </el-form>
     </div>
 </template>
 
 <script>
-import { sendMsg, msgListener } from "../api";
+import { sendMsg, sendSyncMsg, msgListener } from "../api";
 
 export default {
     name: "Home",
@@ -61,6 +75,21 @@ export default {
                     let time = this.dateToString(new Date());
                     this.msg.receiveMsg += `[${time}] JS: ${this.msg.sendMsg}\n`;
                     this.msg.sendMsg = "";
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        },
+
+        sendSync() {
+            let time = this.dateToString(new Date());
+            this.msg.receiveMsg += `[${time}] JS-Sync: ${this.msg.sendMsg}\n`;
+
+            let msg = this.msg.sendMsg;
+            this.msg.sendMsg = "";
+            sendSyncMsg(msg)
+                .then((response) => {
+                    console.log(response);
                 })
                 .catch((error) => {
                     console.error(error);
